@@ -1,0 +1,58 @@
+Pack downloaded from Freesound
+----------------------------------------
+
+"Despicable Me Like Minion Sounds"
+
+This Pack of sounds contains sounds by the following user:
+ - ManuelGraf ( https://freesound.org/people/ManuelGraf/ )
+
+You can find this pack online at: https://freesound.org/people/ManuelGraf/packs/13333/
+
+
+Licenses in this Pack (see below for individual sound licenses)
+---------------------------------------------------------------
+
+Attribution 4.0: https://creativecommons.org/licenses/by/4.0/
+
+
+Sounds in this Pack
+-------------------
+
+  * 209740__manuelgraf__minion_yahoo_2.wav.wav
+    * url: https://freesound.org/s/209740/
+    * license: Attribution 4.0
+  * 209739__manuelgraf__minion_yahoo_3.wav.wav
+    * url: https://freesound.org/s/209739/
+    * license: Attribution 4.0
+  * 209738__manuelgraf__minion_taunt_3.wav.wav
+    * url: https://freesound.org/s/209738/
+    * license: Attribution 4.0
+  * 209737__manuelgraf__minion_yahoo_1.wav.wav
+    * url: https://freesound.org/s/209737/
+    * license: Attribution 4.0
+  * 209736__manuelgraf__minion_laugh_2.wav.wav
+    * url: https://freesound.org/s/209736/
+    * license: Attribution 4.0
+  * 209735__manuelgraf__minion_laugh_3.wav.wav
+    * url: https://freesound.org/s/209735/
+    * license: Attribution 4.0
+  * 209734__manuelgraf__minion_taunt_1.wav.wav
+    * url: https://freesound.org/s/209734/
+    * license: Attribution 4.0
+  * 209733__manuelgraf__minion_taunt_2.wav.wav
+    * url: https://freesound.org/s/209733/
+    * license: Attribution 4.0
+  * 209732__manuelgraf__minion_hit_1.wav.wav
+    * url: https://freesound.org/s/209732/
+    * license: Attribution 4.0
+  * 209731__manuelgraf__minion_hit_2.wav.wav
+    * url: https://freesound.org/s/209731/
+    * license: Attribution 4.0
+  * 209730__manuelgraf__minion_hit_3.wav.wav
+    * url: https://freesound.org/s/209730/
+    * license: Attribution 4.0
+  * 209729__manuelgraf__minion_laugh_1.wav.wav
+    * url: https://freesound.org/s/209729/
+    * license: Attribution 4.0
+
+
