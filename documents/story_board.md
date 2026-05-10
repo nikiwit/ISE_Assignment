@@ -3,31 +3,32 @@
 ## Introduction
 >*Can be videos created with AI or other sources*
 
-In a quiet and peaceful neighborhood, there is a unique looking house with black and tall design. The neighbors only know about a single man, named Gru, with odd and antisocial personality lives there, but underneath that there is a high-tech lab hiding bellow the house. Gru is a supervillain aiming to become the best in the world. With the assistance of Dr. Nefario and minions, Gru aims to steal the moon.
+In a quiet and peaceful neighborhood, there is a unique looking house with black and tall design. The neighbors only know about a single man, named Gru, with odd and antisocial personality lives there, but underneath that there is a high-tech lab hiding below the house. Gru is a supervillain aiming to become the best in the world. With the assistance of Dr. Nefario and minions, Gru aims to steal the moon.
 
 
 ## Characters
 
 | Character | Design | Abilities |
 |-----------|--------|-----------|
-| **Gru** | Tall, bald villain in a long grey coat | Freeze Ray — freezes enemies for 3s; jump and dodge; 3 lives |
+| **Gru** | Tall, bald villain in a long grey coat | Plasma Blaster — destroys enemies on hit; jump, crouch, and dodge; 3 lives |
 | **Dr. Nefario** | Elderly scientist in lab coat and goggles | NPC — briefs Gru between scenes, no combat |
-| **Vector** | Orange tracksuit, smug posture | Fires 3-fish bursts; defeated after 3 freeze hits |
+| **Vector** | Orange tracksuit, smug posture | Fires 3-fish bursts; defeated after 3 plasma hits |
 | **Minions** | Small, yellow, denim overalls | Collectibles — each one restores 1 life |
-| **Moon Guards** | Small robotic sentinels | Patrol the lunar surface; frozen in 1 hit |
+| **Moon Guards** | Small robotic sentinels | Patrol the lunar surface; destroyed in 1 hit |
 | **Agnes** | Small girl with pigtails | End-game cameo only |
+| **Vector's Drones** | Small, spherical flying robots with red sensors | Patrol fixed paths; destroyed in 1 hit; fire energy blasts every 2 s |
 
 ---
 
 ## Scene 1: Shrink ray news
 
-Inside the lab, Dr. Nefario notifies Gru that Vector has 3 shrink ray components hidden in his fortress which they need to steal the moon. Without further ado, Gru picks the opportunity and decides to go to the fortress to steal them.
+Inside the lab, Dr. Nefario delivers urgent news: Vector has gotten his hands on all five components of their shrink ray and locked them inside his fortress. "Without those parts, stealing the moon is impossible," Nefario warns. Gru cracks his knuckles and grabs his Plasma Blaster. "No one steals from the greatest villain in the world. Not even Vector." With a determined stride, Gru heads for the door.
 
 ## Scene 2: Vector’s Fortress
 
 **Environment:** Dark city skyline at night, with Vector’s pyramid fortress looming in the background. Inside: dimly lit metal platforms, wall-mounted turrets, and unstable cracked floor tiles.
 
-Equipped with freeze ray, Gru walks through the city exterior at night to Vector’s fortress. Gru stands above a platform and it brings him up. Gru needs to collect all 3 parts of the shrink ray, but Vector’s indomitable fortress doesn’t allow him to easily steal the parts. Gru needs to deal with Henchmen patrols which he can dodge or freeze using freeze ray and also turrets which fire projectiles every 3 seconds. Some platforms are unstable that they can crack and fall after 1 second. Gru can survive damages up to 3. There are minions, who follow Gru infiltrating the fortress, that can help Gru recover 1 life.
+Equipped with the Plasma Blaster, Gru walks through the city exterior at night to Vector’s fortress. Gru stands above a platform and it brings him up. Gru needs to collect all 5 parts of the shrink ray, but Vector’s indomitable fortress doesn’t allow him to easily steal the parts. Gru needs to deal with hovering gunship turrets and patrol drones, which he can dodge or destroy with the Plasma Blaster. Some platforms are unstable that they can crack and fall after 1 second. A low overhead in one section forces Gru to crouch through a tunnel. Gru can survive damages up to 3. There are minions, who follow Gru infiltrating the fortress, that can help Gru recover 1 life.
 
 >Can add:
 >- Fixed position **laser** ray that can shoot laser regularly
@@ -37,7 +38,7 @@ Equipped with freeze ray, Gru walks through the city exterior at night to Vector
 
 **Environment:** The top floor of Vector's fortress — a wide open arena lit by red alarm lights, with a single raised platform at the centre.
 
-After Gru successfully collects all 3 parts of shrink ray, Vector suddenly appears on a raised platform. Vector is a villain who uses fish to be his weapon and likes to underestimate others to make him look mighty. Vector fires 3 fish that Gru can dodge them by jumping. With freeze ray, Gru can damage Vector while he is in motion. After 3 successful hit, Vector turns into a block of ice signing victory for Gru. Dr. Nefario instructs Gru to go back with the components and go to the rocket.
+After Gru successfully collects all 5 parts of shrink ray, Vector suddenly appears on a raised platform. Vector is a villain who uses fish to be his weapon and likes to underestimate others to make him look mighty. Vector fires 3 fish that Gru can dodge them by jumping. With the Plasma Blaster, Gru can damage Vector while he is in motion. After 3 successful hits, Vector falls in defeat signaling Gru's victory. Dr. Nefario instructs Gru to go back with the components and go to the rocket.
 
 >Can add:
 >- Dramatic appearance like **security alarm**, or **animations** in between
@@ -53,7 +54,7 @@ Gru is now inside the rocket and claims that the Moon will be his. The rocket th
 
 **Environment:** Grey lunar surface with craters and fractured tiles underfoot. Low gravity; Earth hangs in the dark sky above.
 
-Gru’s rocket finally arrives at the final destination, so he exits afterwards. This time, he is on the moon, so gravity works differently. He will now jump higher and fall slower. Some moon tiles may crack under Gru’s feet, so he needs to be careful. He also needs to freeze the moon guards patrolling within the area, so they won’t hinder his final objective. Along the way to the final goal, Gru needs to collect 3 fuel cells to fully charge the Shrink Ray.
+Gru’s rocket finally arrives at the final destination, so he exits afterwards. This time, he is on the moon, so gravity works differently. He will now jump higher and fall slower. Some moon tiles may crack under Gru’s feet, so he needs to be careful. He also needs to destroy the moon guards patrolling within the area with the Plasma Blaster, so they won’t hinder his final objective. Along the way to the final goal, Gru needs to collect 3 fuel cells to fully charge the Shrink Ray.
 
 ## Scene 6: Steal the Moon
 
