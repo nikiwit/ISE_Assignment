@@ -56,3 +56,7 @@ Assignment/
   Use https://cloudconvert.com/flac-to-ogg or `ffmpeg -i laser_freeze_ray.flac laser_freeze_ray.ogg`
 - [ ] **Download Level 1 city night background** — not yet acquired  
   Search itch.io: "night city platformer background free"
+
+
+## added info: 
+- Bypass level 3,4,5 by playing and completing scene 1 to play scene 6 (temporary)
