@@ -46,7 +46,7 @@ Assignment/
 
 ---
 
-## Pending Before Coding
+## Pending Before Coding (OUTDATED)
 
 - [ ] **Cut sprite sheets into frames** — use https://ezgif.com/sprite-cutter  
   Upload `gru_spritesheet.png`, `carl_minion_spritesheet.png`, `vector_spritesheet.png`

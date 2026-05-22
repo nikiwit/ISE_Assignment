@@ -13,12 +13,16 @@ import pygame_menu
 from settings import WIDTH, HEIGHT, FPS, DARK, ASSETS_DIR
 from scene1_lab      import scene1
 from scene2_fortress import scene2
+from scene6_stealmoon import scene6
+
 from progress import load_progress, mark_complete, is_unlocked, is_coming_soon
 
 MENU   = "menu"
 SCENE1 = "scene1"
 SCENE2 = "scene2"
 SCENE3 = "scene3"  # placeholder for the boss fight — teammates plug their scene in here
+SCENE6 = "scene6"  # final scene, gru steals the moon
+
 
 # scene id (display label, scene state constant or None for placeholders)
 _SCENE_BUTTONS = (
@@ -27,7 +31,7 @@ _SCENE_BUTTONS = (
     ("scene3", "3 BOSS FIGHT",        SCENE3),
     ("scene4", "4 ASTEROID DODGE",    None),
     ("scene5", "5 LUNAR SURFACE",     None),
-    ("scene6", "6 STEAL THE MOON",    None),
+    ("scene6", "6 STEAL THE MOON",    SCENE6),
 )
 
 
@@ -171,6 +175,13 @@ def main():
             for ev in events:
                 if ev.type == pygame.KEYDOWN and ev.key == pygame.K_ESCAPE:
                     state = MENU
+        
+        # --- for scene6 ---
+        elif state == SCENE6:
+            # Call scene6 function
+            next_state = scene6(screen, clock)
+            state = MENU
+
 
         pygame.display.flip()
         clock.tick(FPS)
