@@ -95,7 +95,7 @@ def scene6(screen, clock):
     
     SPEAKER_COLOURS = {"GRU": (255, 210, 100), "AGNES": (255, 100, 100), "SYSTEM": (255, 255, 255)}
     max_charge = 180
-    playable_scenes = ("scene1", "scene2", "scene6")
+    playable_scenes = ("scene1", "scene2", "scene3", "scene4", "scene5", "scene6")
     
     while True:
         clock.tick(FPS)

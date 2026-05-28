@@ -7,6 +7,7 @@ from settings import ASSETS_DIR, WIDTH, HEIGHT, FPS, WHITE, RED, GREEN, YELLOW, 
 from rocket import *
 # take from scene1_lab for displaying dialogue
 from scene1_lab import _load_gru_idle, _load_nefario, _load_background, _render_wrapped
+from pause import run_pause
 
 def _load_sound(filename):
     path = os.path.join(ASSETS_DIR, "sfx", filename)
@@ -93,7 +94,7 @@ def _render_ui(surface, rocket, distance, game_over, victory, fuel_empty=False):
         "MOVE: ARROWS / WASD",
         "BOOST: SHIFT",
         "DASH: SPACE",
-        "ESC: EXIT TO MENU",
+        "ESC: PAUSE",
     ]
     Y = HEIGHT - 40
     for idx, text in enumerate(help_text):
@@ -106,11 +107,11 @@ def _render_ui(surface, rocket, distance, game_over, victory, fuel_empty=False):
         surface.blit(overlay, (0, 0))
         end_font = pygame.font.Font(None, 58)
         if fuel_empty:
-            msg = end_font.render("FUEL EMPTY! PRESS ANY KEY TO RESTART OR ESC TO GO BACK", True, YELLOW)
+            msg = end_font.render("FUEL EMPTY! PRESS ANY KEY TO RESTART OR ESC TO MENU", True, YELLOW)
         else:
-            msg = end_font.render("DESTROYED! PRESS ANY KEY TO RESTART OR ESC TO GO BACK", True, RED)
+            msg = end_font.render("DESTROYED! PRESS ANY KEY TO RESTART", True, RED)
         surface.blit(msg, msg.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 30)))
-        hint = font.render("PRESS ANY KEY to return to menu", True, WHITE)
+        hint = font.render("PRESS ANY KEY to continue", True, WHITE)
         surface.blit(hint, hint.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 30)))
 
     if victory:
@@ -271,9 +272,22 @@ def scene4(screen, clock):
                     _stop_scene_audio()
                     
                     return "victory"
+                
                 if event.key == pygame.K_ESCAPE:
-                    _stop_scene_audio()
-                    return "back"
+                    if game_over:
+                        _stop_scene_audio()
+                        return "back"
+                    
+                    choice = run_pause(screen, clock)
+                    if choice == "resume":
+                        pass
+                    elif choice == "restart":
+                        _stop_scene_audio()
+                        return "restart"
+                    else:
+                        _stop_scene_audio()
+                        return "back"
+                    
                 if game_over:
                     _stop_scene_audio()
                     return "restart"
