@@ -13,6 +13,8 @@ import pygame_menu
 from settings import WIDTH, HEIGHT, FPS, DARK, ASSETS_DIR
 from scene1_lab      import scene1
 from scene2_fortress import scene2
+from scene3_boss     import scene3
+from scene5_moon     import scene5
 from scene6_stealmoon import scene6
 
 from progress import load_progress, mark_complete, is_unlocked, is_coming_soon
@@ -20,7 +22,9 @@ from progress import load_progress, mark_complete, is_unlocked, is_coming_soon
 MENU   = "menu"
 SCENE1 = "scene1"
 SCENE2 = "scene2"
-SCENE3 = "scene3"  # placeholder for the boss fight — teammates plug their scene in here
+SCENE3 = "scene3"
+SCENE4 = "scene4"
+SCENE5 = "scene5"
 SCENE6 = "scene6"  # final scene, gru steals the moon
 
 
@@ -29,8 +33,8 @@ _SCENE_BUTTONS = (
     ("scene1", "1 LAB BRIEFING",      SCENE1),
     ("scene2", "2 VECTORS FORTRESS",  SCENE2),
     ("scene3", "3 BOSS FIGHT",        SCENE3),
-    ("scene4", "4 ASTEROID DODGE",    None),
-    ("scene5", "5 LUNAR SURFACE",     None),
+    ("scene4", "4 ASTEROID DODGE",    SCENE4),  # <--- 2. WIRE UP SCENE 4 BUTTON
+    ("scene5", "5 LUNAR SURFACE",     SCENE5),  # <--- 2. WIRE UP SCENE 5 BUTTON
     ("scene6", "6 STEAL THE MOON",    SCENE6),
 )
 
@@ -126,13 +130,11 @@ def main():
                 running = False
 
         # (re)start the menu music whenever we land back in the menu state from somewhere else.
-        # each scene loads its own track on entry, so we only have to act on the transition itself.
-        # rebuilding the menu here picks up any unlocks the player just earned.
         if state == MENU and prev_state != MENU:
-            pygame.display.set_caption(WINDOW_TITLE)  # scenes overwrite the caption, so restore it on the way back
+            pygame.display.set_caption(WINDOW_TITLE)
             pygame.mixer.music.load(menu_music)
             pygame.mixer.music.set_volume(0.5)
-            pygame.mixer.music.play(-1)  # -1 means loop forever
+            pygame.mixer.music.play(-1)
             main_menu = _build_main_menu(menu_theme, start_scene, quit_game)
 
         prev_state = state
@@ -145,9 +147,7 @@ def main():
             main_menu.draw(screen)
 
         elif state == SCENE1:
-            # scene1 loads its own music on entry, which auto-stops the menu track for us
             next_state = scene1(screen, clock)
-            # cutscene always plays through to the end → mark complete on any non-menu return
             if next_state == SCENE2:
                 mark_complete("scene1")
             state = next_state
@@ -155,33 +155,39 @@ def main():
         elif state == SCENE2:
             next_state = scene2(screen, clock)
             if next_state == SCENE3:
-                # only the win path (transition to scene3) counts as completion;
-                # death-restart and pause-exit don't unlock anything
                 mark_complete("scene2")
             elif next_state == "restart":
-                # pause menu's RESTART LEVEL — re-enter the same scene fresh
                 next_state = SCENE2
             state = next_state
 
         elif state == SCENE3:
-            # temporary holding screen so scene2's "scene3" return value doesn't
-            # crash the state machine. teammates: drop your boss-fight scene in here.
-            font  = pygame.font.Font(None, 48)
-            msg   = font.render("Scene 3 — Coming soon (Boss Fight)", True, (255, 255, 255))
-            small = pygame.font.Font(None, 28)
-            hint  = small.render("ESC to return to menu", True, (160, 160, 160))
-            screen.blit(msg,  msg.get_rect(center=(WIDTH // 2, HEIGHT // 2)))
-            screen.blit(hint, hint.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 60)))
-            for ev in events:
-                if ev.type == pygame.KEYDOWN and ev.key == pygame.K_ESCAPE:
-                    state = MENU
-        
+            next_state = scene3(screen, clock)
+            if next_state == "restart":
+                next_state = SCENE3
+            # Assuming winning scene3 takes you to the moon mission sequence
+            elif next_state == SCENE4 or next_state == SCENE5:
+                mark_complete("scene3")
+            state = next_state
+
+        # --- 3. ADD RUNTIME HANDLERS FOR YOUR MOON MISSION SECTIONS ---
+        elif state == SCENE4 or state == SCENE5:
+            # Since your combined script handles both Section A and Section B,
+            # launching either button triggers the mission sequence cleanly.
+            next_state = scene5(screen, clock)
+
+            if next_state == "restart":
+                # Keeps the player inside the same state loop they selected to run it again fresh
+                next_state = state
+            elif next_state == "menu":
+                # Handled inside scene4_moon_mission: marks complete and exits back safely
+                next_state = MENU
+
+            state = next_state
+
         # --- for scene6 ---
         elif state == SCENE6:
-            # Call scene6 function
             next_state = scene6(screen, clock)
             state = MENU
-
 
         pygame.display.flip()
         clock.tick(FPS)

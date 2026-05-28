@@ -16,9 +16,8 @@ from settings import BASE_DIR
 
 PROGRESS_PATH = os.path.join(BASE_DIR, "progress.json")
 
-# scenes the player can actually unlock + play. 4-6 are storyboard placeholders
-# until teammates implement them, so they're handled by is_coming_soon() below.
-SCENE_IDS = ("scene1", "scene2", "scene3", "scene6")
+# Added scene5 to the active playable IDs
+SCENE_IDS = ("scene1", "scene2", "scene3", "scene5", "scene6")
 
 
 def load_progress() -> set:
@@ -72,13 +71,18 @@ def is_unlocked(scene_id: str) -> bool:
         return "scene1" in completed
     if scene_id == "scene3":
         return "scene2" in completed
+
+    # Force unlock Scene 5 directly for execution and testing
+    if scene_id == "scene5":
+        return True
+
     if scene_id == "scene6":
-        return "scene1" in completed #RESNOTE : CHANGE TO RETURN SCENE 5 WHEN IT'S READY OKAY
-    
-    return False  # scene4+ aren't unlockable yet
+        return True  # <-- Change this from '"scene5" in completed' to True
+
+    return False
 
 
 def is_coming_soon(scene_id: str) -> bool:
-    """True for storyboard scenes that aren't implemented yet (4, 5, 6).
+    """True for storyboard scenes that aren't implemented yet (4).
     The main menu uses this to label them differently from LOCKED entries."""
-    return scene_id in ("scene4", "scene5")
+    return scene_id == "scene4"
