@@ -242,7 +242,7 @@ class Health_Display (pygame.sprite.Sprite):
         img = self.frames[self.index]
         if lighter_color:
             img = img.copy()
-            img.fill((255, 255, 255, 100), special_flags=pygame.BLEND_RGBA_ADD)
+            img.fill((255, 255, 255, 0), special_flags=pygame.BLEND_RGBA_ADD)
         rect = img.get_rect(center=center)
         surface.blit(img, rect)
         

@@ -157,9 +157,12 @@ def display_dialogue(screen, clock, DIALOGUE, SPEAKER_COLOURS):
                     curr_line += 1
                     if curr_line >= len(DIALOGUE):
                         finished = True
+                        
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    return False
 
         if finished:
-            break
+            return True
 
         screen.blit(lab_bg, (0, 0))
 
@@ -209,7 +212,8 @@ def scene4(screen, clock):
         ("GRU", "Perfect. I'm entering the rocket — the moon will be mine."),
     ]
     SPEAKER_COLOURS = {"DR. NEFARIO": (160, 220, 255), "GRU": (255, 210, 100)}
-    display_dialogue(screen, clock, DIALOGUE, SPEAKER_COLOURS)
+    if not display_dialogue(screen, clock, DIALOGUE, SPEAKER_COLOURS):
+        return "back"
 
     bg = _create_starfield()
 
