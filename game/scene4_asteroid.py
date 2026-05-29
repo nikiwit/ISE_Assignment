@@ -107,11 +107,11 @@ def _render_ui(surface, rocket, distance, game_over, victory, fuel_empty=False):
         surface.blit(overlay, (0, 0))
         end_font = pygame.font.Font(None, 58)
         if fuel_empty:
-            msg = end_font.render("FUEL EMPTY! PRESS ANY KEY TO RESTART OR ESC TO MENU", True, YELLOW)
+            msg = end_font.render("FUEL EMPTY! PRESS R TO RESTART", True, YELLOW)
         else:
-            msg = end_font.render("DESTROYED! PRESS ANY KEY TO RESTART", True, RED)
+            msg = end_font.render("DESTROYED! PRESS R TO RESTART", True, RED)
         surface.blit(msg, msg.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 30)))
-        hint = font.render("PRESS ANY KEY to continue", True, WHITE)
+        hint = font.render("PRESS ESC TO GO BACK TO MENU", True, WHITE)
         surface.blit(hint, hint.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 30)))
 
     if victory:
@@ -238,15 +238,18 @@ def scene4(screen, clock):
     music_path = _load_music("space.mp3")
     music_length = 0.0
     music_start_time = 0
+    music_pause_pos = 0.0
 
-    def _play_scene_music():
+    def _play_scene_music(start_pos: float = 0.0):
         nonlocal music_length, music_start_time
         if music_path:
             music_length = pygame.mixer.Sound(music_path).get_length()
             pygame.mixer.music.load(music_path)
-            pygame.mixer.music.set_volume(0.7 * sound_scale)
-            pygame.mixer.music.play(0)
-            music_start_time = pygame.time.get_ticks()
+            pygame.mixer.music.set_volume(0.5 * sound_scale)
+            if start_pos and music_length:
+                start_pos = start_pos % music_length
+            pygame.mixer.music.play(0, start_pos)
+            music_start_time = pygame.time.get_ticks() - int(start_pos * 1000)
 
     if music_path:
         _play_scene_music()
@@ -284,19 +287,25 @@ def scene4(screen, clock):
                 pygame.quit()
                 raise SystemExit
             if event.type == pygame.KEYDOWN:
-                if victory:
-                    _stop_scene_audio()
-                    
-                    return "victory"
-                
                 if event.key == pygame.K_ESCAPE:
+                    if victory :
+                        _stop_scene_audio()
+                        return "victory"
+                    
                     if game_over:
                         _stop_scene_audio()
                         return "back"
                     
+                    if music_path and pygame.mixer.music.get_busy():
+                        paused_ms = pygame.mixer.music.get_pos()
+                        if paused_ms >= 0:
+                            music_pause_pos = paused_ms / 1000.0
+                        else:
+                            music_pause_pos = 0.0
+
                     choice = run_pause(screen, clock)
                     if choice == "resume":
-                        _play_scene_music()
+                        _play_scene_music(start_pos=music_pause_pos)
                     elif choice == "restart":
                         _stop_scene_audio()
                         return "restart"
@@ -304,7 +313,7 @@ def scene4(screen, clock):
                         _stop_scene_audio()
                         return "back"
                     
-                if game_over:
+                if game_over and event.key == pygame.K_r:
                     _stop_scene_audio()
                     return "restart"
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -465,6 +474,7 @@ def scene4(screen, clock):
 
         if victory:
             rocket._stop_blast_loop()
+            pygame.mixer.music.set_volume(0.2)
             mission_delay -= 1
             if mission_delay <= 0:
                 if music_length > 0:
