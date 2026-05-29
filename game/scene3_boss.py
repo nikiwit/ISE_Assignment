@@ -222,7 +222,13 @@ def scene3(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     sfx_explode = pygame.mixer.Sound(os.path.join(ASSETS_DIR, "sfx", "explosion.wav"))
     sfx_hit = pygame.mixer.Sound(os.path.join(ASSETS_DIR, "sfx", "minion_hit_1.wav"))
     sfx_laser = pygame.mixer.Sound(os.path.join(ASSETS_DIR, "sfx", "laser_freeze_ray.ogg"))
+    sfx_start = pygame.mixer.Sound(os.path.join(ASSETS_DIR, "sfx", "level_start.wav"))
     laser_channel = pygame.mixer.Channel(1)
+    start_channel = pygame.mixer.Channel(3)
+
+    def play_level_start():
+        start_channel.stop()
+        start_channel.play(sfx_start)
 
     floor = BossPlatform(pygame.Rect(0, HEIGHT - 60, WIDTH, 60))
     raised_platform = BossPlatform(pygame.Rect(300, 460, 680, 24))
@@ -278,6 +284,7 @@ def scene3(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
                         if curr_line >= len(intro_dialogue):
                             stage = "fight"
                             curr_line = 0
+                            play_level_start()
                     elif stage == "win_cutscene":
                         curr_line += 1
                         if curr_line >= len(win_dialogue):

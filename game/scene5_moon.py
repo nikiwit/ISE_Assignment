@@ -108,6 +108,8 @@ class LunarBackground:
         self.stars = [(random.randint(0, WIDTH), random.randint(0, HEIGHT - 200)) for _ in range(60)]
         self.moon_radius = 180
         self.moon_scale = 1.0
+        earth_path = os.path.join(ASSETS_DIR, "backgrounds", "earth", "earth.png")
+        self.earth_image = pygame.image.load(earth_path).convert_alpha() if os.path.exists(earth_path) else None
 
     def draw(self, screen: pygame.Surface, camera_x: int, climax_progress: float = 0.0):
         for sx, sy in self.stars:
@@ -122,22 +124,41 @@ class LunarBackground:
             if climax_progress > 0:
                 pygame.draw.circle(screen, (100, 200, 255, 50), (target_x, target_y), current_radius + 15)
 
-            pygame.draw.circle(screen, (220, 225, 240), (target_x, target_y), current_radius)
-            pygame.draw.circle(screen, (190, 195, 210), (target_x - 40, target_y - 30), 35)
-            pygame.draw.circle(screen, (190, 195, 210), (target_x + 50, target_y + 40), 25)
+            if self.earth_image:
+                earth_size = current_radius * 2
+                earth = pygame.transform.smoothscale(self.earth_image, (earth_size, earth_size))
+                screen.blit(earth, earth.get_rect(center=(target_x, target_y)))
+            else:
+                pygame.draw.circle(screen, (40, 120, 220), (target_x, target_y), current_radius)
+                pygame.draw.circle(screen, (60, 170, 90), (target_x - 40, target_y - 30), 35)
+                pygame.draw.circle(screen, (60, 170, 90), (target_x + 50, target_y + 40), 25)
 
 
 def scene5(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     """Runs Scene 5 — Featuring Lunar Surface Scrolling and the Shrink Ray Climax."""
     pygame.display.set_caption("Scene 5 — Operations: Capture The Moon")
 
+    scene5_music = "level5_misc_warped.mp3"
+    music_path = os.path.join(ASSETS_DIR, "music", scene5_music)
+
+    def play_scene5_music():
+        if os.path.exists(music_path):
+            pygame.mixer.music.load(music_path)
+            pygame.mixer.music.play(-1)
+        else:
+            print(f"DEBUG: Scene 5 music file not found: {music_path}")
+
+    play_scene5_music()
+
     # Low-Gravity Physics Engine Tweaks
     orig_gravity = getattr(gru_module, "GRAVITY", 0.6)
     gru_module.GRAVITY = 0.3
 
     sfx_laser = pygame.mixer.Sound(os.path.join(ASSETS_DIR, "sfx", "laser_freeze_ray.ogg"))
-    sfx_explode = pygame.mixer.Sound(os.path.join(ASSETS_DIR, "sfx", "explosion.wav"))
-    sfx_pickup = pygame.mixer.Sound(os.path.join(ASSETS_DIR, "sfx", "minion_hit_1.wav"))
+    sfx_guard_freeze = pygame.mixer.Sound(os.path.join(ASSETS_DIR, "sfx", "minion_hit_1.wav"))
+    sfx_damage = pygame.mixer.Sound(os.path.join(ASSETS_DIR, "sfx", "minion_hit_1.wav"))
+    sfx_fuel_pickup = pygame.mixer.Sound(os.path.join(ASSETS_DIR, "sfx", "collect_fuel.mp3"))
+    sfx_start = pygame.mixer.Sound(os.path.join(ASSETS_DIR, "sfx", "level_start.wav"))
 
     bg = LunarBackground()
     camera_x = 0
@@ -179,10 +200,6 @@ def scene5(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     rocket_target_y = floor_y - 110
     landing_timer = 0
 
-    climax_timer = 0
-    charge_particles = []
-    screen_shake = 0
-
     running = True
     while running:
         clock.tick(FPS)
@@ -200,12 +217,14 @@ def scene5(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
                     if action in ("menu", "restart"):
                         gru_module.GRAVITY = orig_gravity
                         return action
+                    if action == "resume":
+                        play_scene5_music()
 
                 if event.key in (pygame.K_SPACE, pygame.K_RETURN):
                     if stage == "victory":
                         gru_module.GRAVITY = orig_gravity
                         mark_complete("scene5")
-                        return "menu"
+                        return "scene6"
 
         # --- PHASE B.1: ROCKET TOUCH DOWN CUTSCENE ---
         if stage == "rocket_landing":
@@ -218,6 +237,7 @@ def scene5(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
                     gru.rect.centerx = rocket_rect.centerx + 60
                     gru.rect.bottom = floor_y
                     stage = "moon_surface"
+                    sfx_start.play()
 
         # --- PHASE B.2: ACTIVE LOW-GRAVITY PLATFORMING ---
         elif stage == "moon_surface":
@@ -243,25 +263,23 @@ def scene5(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
                 if hit_guard and not hit_guard.is_frozen:
                     bolt.kill()
                     hit_guard.freeze()
-                    sfx_pickup.play()
+                    sfx_guard_freeze.play()
 
             collected = pygame.sprite.spritecollide(gru, fuel_cells, True)
             if collected:
                 fuel_cells_collected += len(collected)
-                sfx_pickup.play()
+                sfx_fuel_pickup.play()
 
             for guard in guards_group.sprites():
                 if not guard.is_frozen and gru.rect.colliderect(guard.rect):
                     if gru.take_damage():
-                        sfx_pickup.play()
+                        sfx_damage.play()
 
             if gru.rect.left < 0:
                 gru.rect.left = 0
 
-            if gru.rect.centerx > WIDTH // 2:
-                camera_x = gru.rect.centerx - WIDTH // 2
-                if camera_x > total_level_width - WIDTH:
-                    camera_x = total_level_width - WIDTH
+            camera_x = gru.rect.centerx - WIDTH // 2
+            camera_x = max(0, min(camera_x, total_level_width - WIDTH))
 
             if gru.rect.top > HEIGHT or gru.hp <= 0:
                 pygame.time.delay(500)
@@ -270,8 +288,7 @@ def scene5(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
 
             if gru.rect.x >= climax_trigger_x:
                 if fuel_cells_collected >= 3:
-                    stage = "climax_charge"
-                    climax_timer = 0
+                    stage = "victory"
                 else:
                     show_fuel_warning = True
                     warning_timer = 90
@@ -281,60 +298,13 @@ def scene5(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
                 if warning_timer <= 0:
                     show_fuel_warning = False
 
-        # --- PHASE C.1: CLIMAX: SHRINK RAY POWER CHARGE ---
-        elif stage == "climax_charge":
-            climax_timer += 1
-            gru.vx = 0
-            gun_x = gru.rect.centerx + 20 - camera_x
-            gun_y = gru.rect.centery - 10
-
-            if climax_timer % 2 == 0:
-                angle = random.uniform(0, math.pi * 2)
-                dist = random.randint(100, 250)
-                charge_particles.append({
-                    "x": gun_x + math.cos(angle) * dist,
-                    "y": gun_y + math.sin(angle) * dist,
-                    "target_x": gun_x, "target_y": gun_y,
-                    "speed": random.uniform(0.08, 0.15)
-                })
-
-            for p in charge_particles[:]:
-                p["x"] += (p["target_x"] - p["x"]) * p["speed"]
-                p["y"] += (p["target_y"] - p["y"]) * p["speed"]
-                if math.hypot(p["target_x"] - p["x"], p["target_y"] - p["y"]) < 8:
-                    charge_particles.remove(p)
-
-            if climax_timer > 90:
-                screen_shake = random.randint(-3, 3)
-            if climax_timer >= 180:
-                stage = "climax_shrink"
-                climax_timer = 0
-                sfx_laser.play()
-
-        # --- PHASE C.2: CLIMAX: DISCHARGE & MOON SHRINK ---
-        elif stage == "climax_shrink":
-            climax_timer += 1
-            screen_shake = random.randint(-5, 5)
-            if bg.moon_scale > 0.02:
-                bg.moon_scale -= 0.008
-            else:
-                bg.moon_scale = 0.01
-                screen_shake = 0
-
-                # FIXED: Stops the continuous laser humming track loop right before exploding
-                sfx_laser.stop()
-                sfx_explode.play()
-
-                stage = "victory"
-
         # ==========================================
         # GRAPHICS DISPLAY PIPELINE
         # ==========================================
         render_surf = pygame.Surface((WIDTH, HEIGHT))
         render_surf.fill(DARK)
 
-        climax_active = 1.0 if stage in ("climax_charge", "climax_shrink", "victory") else 0.0
-        bg.draw(render_surf, camera_x, climax_active)
+        bg.draw(render_surf, camera_x)
 
         for plat in static_platforms:
             render_surf.blit(plat.image, plat.rect.move(-camera_x, 0))
@@ -345,6 +315,10 @@ def scene5(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             render_surf.blit(cell.image, cell.rect.move(-camera_x, 0))
         for guard in guards_group:
             render_surf.blit(guard.image, guard.rect.move(-camera_x, 0))
+
+        def draw_world_group(group):
+            for sprite in group:
+                render_surf.blit(sprite.image, sprite.rect.move(-camera_x, 0))
 
         if stage == "rocket_landing":
             pygame.draw.polygon(render_surf, RED,
@@ -364,23 +338,10 @@ def scene5(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             gru.rect.x = old_x
 
         if stage == "moon_surface":
-            plasma_bolts.draw(render_surf)
-            vfx_group.draw(render_surf)
+            draw_world_group(plasma_bolts)
+            draw_world_group(vfx_group)
 
-        if stage == "climax_charge":
-            for p in charge_particles:
-                pygame.draw.circle(render_surf, (130, 230, 255), (int(p["x"]), int(p["y"])), random.randint(2, 4))
-            pygame.draw.circle(render_surf, (200, 245, 255), (gru.rect.centerx + 20 - camera_x, gru.rect.centery - 10),
-                               int(climax_timer // 6))
-
-        if stage == "climax_shrink":
-            gun_x = gru.rect.centerx + 20 - camera_x
-            gun_y = gru.rect.centery - 10
-            pygame.draw.line(render_surf, (230, 255, 255), (gun_x, gun_y), (WIDTH // 2, HEIGHT // 2 - 50),
-                             int(25 - climax_timer // 4))
-            pygame.draw.circle(render_surf, WHITE, (WIDTH // 2, HEIGHT // 2 - 50), random.randint(30, 60))
-
-        screen.blit(render_surf, (screen_shake, screen_shake))
+        screen.blit(render_surf, (0, 0))
 
         if stage == "moon_surface":
             ui_font = pygame.font.Font(None, 26)
@@ -404,7 +365,7 @@ def scene5(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             f_hint = pygame.font.Font(None, 22)
             screen.blit(f_speaker.render("GRU", True, (160, 220, 255)), (60, HEIGHT - 150))
             screen.blit(
-                f_text.render("I did it! Look at that, it's completely... miniscule! Next stop, the bank!", True,
+                f_text.render("I did it! Look at that, it's all... MINE now! Next act, shrink the moon!", True,
                               WHITE), (60, HEIGHT - 115))
             screen.blit(f_hint.render("Press SPACE / ENTER to return to Main Menu", True, (160, 160, 160)),
                         (WIDTH - 360, HEIGHT - 50))

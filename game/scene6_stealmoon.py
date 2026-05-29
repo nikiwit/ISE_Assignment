@@ -1,6 +1,6 @@
 import pygame
-import pygame
 import os
+import random
 from settings import WIDTH, HEIGHT, FPS, DARK, GREEN, ASSETS_DIR
 from gru import Gru
 from progress import load_progress, mark_complete
@@ -41,7 +41,7 @@ def _render_wrapped(surface, text, font, colour, x, y, max_width):
 def scene6(screen, clock):
     # --- ASSET LOADING ---
     def play_music():
-        music_path = os.path.join(ASSETS_DIR, "music", "misc_warped.mp3")
+        music_path = os.path.join(ASSETS_DIR, "music", "cutscene.wav")
         if os.path.exists(music_path):
             pygame.mixer.music.load(music_path)
             pygame.mixer.music.play(-1)
@@ -54,6 +54,7 @@ def scene6(screen, clock):
     fluffy_sound_path = os.path.join(ASSETS_DIR, "music", "victory_jingle.wav")
     fluffy_sound = pygame.mixer.Sound(fluffy_sound_path) if os.path.exists(fluffy_sound_path) else None
     charge_channel = pygame.mixer.Channel(2)
+    screen_shake = 0
 
     def initialize_scene():
         gru = Gru(x=WIDTH//2 - 50, y=HEIGHT - 200)
@@ -154,13 +155,21 @@ def scene6(screen, clock):
                 stage = "dialogue"
                 if hasattr(gru, 'state'): gru.state = "idle"
 
-        screen.fill(DARK)
-        if bg_image: screen.blit(bg_image, (0, 0))
+        if stage == "charging":
+            screen_shake = random.randint(-2, 2) if charge > max_charge * 0.55 else 0
+        elif stage == "firing":
+            screen_shake = random.randint(-5, 5)
+        else:
+            screen_shake = 0
+
+        render_surf = pygame.Surface((WIDTH, HEIGHT))
+        render_surf.fill(DARK)
+        if bg_image: render_surf.blit(bg_image, (0, 0))
         
         if moon_image and moon_scale > 0:
             w, h = moon_image.get_size()
             scaled_moon = pygame.transform.scale(moon_image, (int(w * moon_scale), int(h * moon_scale)))
-            screen.blit(scaled_moon, scaled_moon.get_rect(center=(WIDTH//2, HEIGHT//3)))
+            render_surf.blit(scaled_moon, scaled_moon.get_rect(center=(WIDTH//2, HEIGHT//3)))
         
         if stage == "firing":
             is_facing_right = getattr(gru, 'facing_right', True)
@@ -171,20 +180,20 @@ def scene6(screen, clock):
                 int(laser_start[0] + (laser_target[0] - laser_start[0]) * laser_progress),
                 int(laser_start[1] + (laser_target[1] - laser_start[1]) * laser_progress),
             )
-            pygame.draw.line(screen, (180, 255, 180), laser_start, laser_end, 9)
-            pygame.draw.line(screen, GREEN, laser_start, laser_end, 5)
+            pygame.draw.line(render_surf, (180, 255, 180), laser_start, laser_end, 9)
+            pygame.draw.line(render_surf, GREEN, laser_start, laser_end, 5)
 
         if stage not in ("dialogue", "stats"):
-            screen.blit(gru.image, gru.rect)
+            render_surf.blit(gru.image, gru.rect)
         
         if stage == "charging":
-            pygame.draw.rect(screen, GREEN, (WIDTH//2 - 200, 650, (charge/max_charge)*400, 20))
+            pygame.draw.rect(render_surf, GREEN, (WIDTH//2 - 200, 650, (charge/max_charge)*400, 20))
             font_prompt = pygame.font.Font(None, 42)
             prompt = font_prompt.render("PRESS SPACE TO ACQUIRE THE MOON!", True, (70, 55, 160))
-            screen.blit(prompt, prompt.get_rect(center=(WIDTH//2, 570)))
+            render_surf.blit(prompt, prompt.get_rect(center=(WIDTH//2, 570)))
             
         elif stage == "dialogue":
-            pygame.draw.rect(screen, (50, 50, 50), (100, 500, WIDTH-200, 150))
+            pygame.draw.rect(render_surf, (50, 50, 50), (100, 500, WIDTH-200, 150))
             speaker, text = DIALOGUE[curr_line]
             if curr_line == 5 and fluffy_sound and not fluffy_played:
                 fluffy_sound.play()
@@ -199,12 +208,12 @@ def scene6(screen, clock):
                 scaled_portrait = pygame.transform.scale(portrait, (scaled_w, scaled_h))
                 x_pos = x_base if speaker == "GRU" else WIDTH - scaled_w + x_base 
                 y_pos = 500 - scaled_h + y_off
-                screen.blit(scaled_portrait, (x_pos, y_pos))
+                render_surf.blit(scaled_portrait, (x_pos, y_pos))
             
             font_s = pygame.font.Font(None, 40)
             font_t = pygame.font.Font(None, 32)
-            screen.blit(font_s.render(speaker, True, SPEAKER_COLOURS.get(speaker, (255,255,255))), (120, 520))
-            _render_wrapped(screen, text, font_t, (255, 255, 255), 120, 560, WIDTH-240)
+            render_surf.blit(font_s.render(speaker, True, SPEAKER_COLOURS.get(speaker, (255,255,255))), (120, 520))
+            _render_wrapped(render_surf, text, font_t, (255, 255, 255), 120, 560, WIDTH-240)
 
         elif stage == "stats":
             completed = load_progress()
@@ -215,7 +224,7 @@ def scene6(screen, clock):
             font_hint = pygame.font.Font(None, 28)
 
             title = font_title.render("MISSION ACCOMPLISHED", True, (255, 220, 80))
-            screen.blit(title, title.get_rect(center=(WIDTH//2, 210)))
+            render_surf.blit(title, title.get_rect(center=(WIDTH//2, 210)))
 
             stats = [
                 "Moon Acquired: YES",
@@ -223,9 +232,11 @@ def scene6(screen, clock):
             ]
             for i, line in enumerate(stats):
                 stat_text = font_stat.render(line, True, (230, 235, 255))
-                screen.blit(stat_text, stat_text.get_rect(center=(WIDTH//2, 300 + i * 52)))
+                render_surf.blit(stat_text, stat_text.get_rect(center=(WIDTH//2, 300 + i * 52)))
 
             hint = font_hint.render("SPACE to return to menu", True, (170, 180, 210))
-            screen.blit(hint, hint.get_rect(center=(WIDTH//2, 500)))
+            render_surf.blit(hint, hint.get_rect(center=(WIDTH//2, 500)))
 
+        screen.fill(DARK)
+        screen.blit(render_surf, (screen_shake, screen_shake))
         pygame.display.flip()

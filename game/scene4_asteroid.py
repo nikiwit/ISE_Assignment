@@ -159,9 +159,11 @@ def display_dialogue(screen, clock, DIALOGUE, SPEAKER_COLOURS):
                         finished = True
                         
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    pygame.mixer.music.stop()
                     return False
 
         if finished:
+            pygame.mixer.music.stop()
             return True
 
         screen.blit(lab_bg, (0, 0))
@@ -218,6 +220,7 @@ def scene4(screen, clock):
     bg = _create_starfield()
 
     sound_scale = 0.7
+    start_sound = _load_sound("level_start.wav")
     boost_sound = _load_sound("rocket_boost.mp3")
     if boost_sound:
         boost_sound.set_volume(0.9 * sound_scale)
@@ -234,12 +237,21 @@ def scene4(screen, clock):
         empty_sound.set_volume(0.9 * sound_scale)
     music_path = _load_music("space.mp3")
     music_length = 0.0
+    music_start_time = 0
+
+    def _play_scene_music():
+        nonlocal music_length, music_start_time
+        if music_path:
+            music_length = pygame.mixer.Sound(music_path).get_length()
+            pygame.mixer.music.load(music_path)
+            pygame.mixer.music.set_volume(0.7 * sound_scale)
+            pygame.mixer.music.play(0)
+            music_start_time = pygame.time.get_ticks()
+
     if music_path:
-        music_length = pygame.mixer.Sound(music_path).get_length()
-        pygame.mixer.music.load(music_path)
-        pygame.mixer.music.set_volume(0.7 * sound_scale)
-        pygame.mixer.music.play(0)
-        music_start_time = pygame.time.get_ticks()
+        _play_scene_music()
+    if start_sound:
+        start_sound.play()
 
     rocket = Rocket(boost_sound, dash_sound, posthit_sound, explosion_sound)
     asteroids = pygame.sprite.Group()
@@ -284,7 +296,7 @@ def scene4(screen, clock):
                     
                     choice = run_pause(screen, clock)
                     if choice == "resume":
-                        pass
+                        _play_scene_music()
                     elif choice == "restart":
                         _stop_scene_audio()
                         return "restart"
