@@ -46,13 +46,4 @@ Assignment/
 
 ---
 
-## Pending Before Coding
-
-- [ ] **Cut sprite sheets into frames** — use https://ezgif.com/sprite-cutter  
-  Upload `gru_spritesheet.png`, `carl_minion_spritesheet.png`, `vector_spritesheet.png`
-- [ ] **Remove backgrounds from character sprites** — teal (Gru), green (Carl), black (Vector)  
-  Use https://ezgif.com/background-remover
-- [ ] **Convert `sfx/laser_freeze_ray.flac` → OGG** — Pygame cannot load FLAC  
-  Use https://cloudconvert.com/flac-to-ogg or `ffmpeg -i laser_freeze_ray.flac laser_freeze_ray.ogg`
-- [ ] **Download Level 1 city night background** — not yet acquired  
-  Search itch.io: "night city platformer background free"
+## Pending
