@@ -118,7 +118,7 @@ def scene6(screen, clock):
                         continue
                     if action == "resume": play_music()
                 
-                if stage == "dialogue" and event.key == pygame.K_SPACE:
+                if stage == "dialogue" and event.key in (pygame.K_SPACE, pygame.K_RETURN):
                     curr_line += 1
                     if curr_line >= len(DIALOGUE):
                         charge_channel.stop()
@@ -126,7 +126,7 @@ def scene6(screen, clock):
                         stage = "stats"
                         continue
 
-                if stage == "stats" and event.key == pygame.K_SPACE:
+                if stage == "stats" and event.key in (pygame.K_SPACE, pygame.K_RETURN):
                     charge_channel.stop()
                     mark_complete("scene6")
                     return "menu"
