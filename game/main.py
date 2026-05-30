@@ -69,7 +69,8 @@ def _build_main_menu(menu_theme, start_scene_cb, quit_cb):
             btn.readonly = True
             btn.update_font({"color": DIM})
         elif not is_unlocked(sid):
-            btn = menu.add.button(f"{label}  [LOCKED]", lambda: None)
+            # dimmed + unselectable already reads as "locked" — no text label needed
+            btn = menu.add.button(label, lambda: None)
             btn.is_selectable = False
             btn.readonly = True
             btn.update_font({"color": DIM})
